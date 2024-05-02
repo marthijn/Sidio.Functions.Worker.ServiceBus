@@ -12,7 +12,9 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <Description>A collection of useful service bus features for .NET isolated middleware</Description>
-        <PackageTags>azure functions servicebus middleware</PackageTags>
+        <PackageTags>azure functions servicebus middleware azure-functions azure-service-bus</PackageTags>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
 
     <ItemGroup>
