@@ -6,7 +6,9 @@ var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults(
         workerApplication =>
         {
-            workerApplication.UseExceptionInsightMiddleware();
+            // use one or the other:
+            // workerApplication.UseExceptionInsightMiddleware();
+            workerApplication.UseScheduledRetryMiddleware();
         })
     .ConfigureServices(ServiceConfiguration.Configuration)
     .Build();

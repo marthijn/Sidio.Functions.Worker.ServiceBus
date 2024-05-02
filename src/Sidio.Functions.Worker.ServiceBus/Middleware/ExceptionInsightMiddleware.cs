@@ -51,7 +51,12 @@ public class ExceptionInsightMiddleware : ServiceBusMiddlewareBase
 
         if (receivedMessage.DeliveryCount >= _options.Value.MaxDeliveryCount)
         {
-            await DeadLetterMessageAsync(messageActions, receivedMessage, exception, cancellationToken).ConfigureAwait(false);
+            await DeadLetterMessageAsync(
+                messageActions,
+                receivedMessage,
+                $"Message has been retried {receivedMessage.DeliveryCount} times",
+                exception,
+                cancellationToken).ConfigureAwait(false);
             return true;
         }
 
@@ -63,20 +68,21 @@ public class ExceptionInsightMiddleware : ServiceBusMiddlewareBase
     /// </summary>
     /// <param name="serviceBusMessageActions">The service bus message actions.</param>
     /// <param name="receivedMessage">The received message.</param>
+    /// <param name="deadLetterReason">The dead-letter reason.</param>
     /// <param name="exception">The exception.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A <see cref="Task"/>.</returns>
     protected virtual Task DeadLetterMessageAsync(
         ServiceBusMessageActions serviceBusMessageActions,
         ServiceBusReceivedMessage receivedMessage,
+        string deadLetterReason,
         Exception exception,
         CancellationToken cancellationToken = default)
     {
-        var reason = $"Message has been retried {receivedMessage.DeliveryCount} times";
         var errorDescription = exception.Message;
         return serviceBusMessageActions.DeadLetterMessageAsync(
             receivedMessage,
-            deadLetterReason: reason,
+            deadLetterReason: deadLetterReason,
             deadLetterErrorDescription: errorDescription,
             cancellationToken: cancellationToken);
     }

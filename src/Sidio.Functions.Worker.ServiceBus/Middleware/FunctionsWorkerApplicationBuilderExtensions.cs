@@ -20,4 +20,15 @@ public static class FunctionsWorkerApplicationBuilderExtensions
         builder.UseWhen<ExceptionInsightMiddleware>(context => context.IsServiceBusTrigger());
         return builder;
     }
+
+    /// <summary>
+    /// Adds the <see cref="ScheduledRetryMiddleware"/>.
+    /// </summary>
+    /// <param name="builder">The function worker application builder.</param>
+    /// <returns>The <see cref="IFunctionsWorkerApplicationBuilder"/>.</returns>
+    public static IFunctionsWorkerApplicationBuilder UseScheduledRetryMiddleware(this IFunctionsWorkerApplicationBuilder builder)
+    {
+        builder.UseWhen<ScheduledRetryMiddleware>(context => context.IsServiceBusTrigger());
+        return builder;
+    }
 }

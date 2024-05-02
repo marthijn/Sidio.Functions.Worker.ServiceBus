@@ -35,6 +35,35 @@ var host = new HostBuilder()
     // ...
 ```
 
+## ScheduledRetryMiddleware
+### Usage
+The `ScheduledRetryMiddleware` is an extension of the `ExceptionInsightMiddleware`, you should not register both middleware.
+```csharp
+var host = new HostBuilder()
+    .ConfigureFunctionsWorkerDefaults(
+        workerApplication =>
+        {
+            workerApplication.UseScheduledRetryMiddleware();
+        })
+    // ...
+```
+
+### Configuration
+- MaxDeliveryCount: the maximum number of delivery attempts before a message is dead-lettered.
+- BackoffMode: the backoff mode to use for rescheduling messages.
+- BackoffInSeconds: the number of seconds to wait before rescheduling a message.
+
+### ServiceBusClient
+An IAzureClientFactory of type ServiceBusClient must be registered to be able to reschedule messages. The extension method `AddServiceBusClientForScheduledRetryMiddleware` is available for this purpose.
+```charp
+services.AddServiceBusClientForScheduledRetryMiddleware(context.Configuration["ConnectionStrings:MyServiceBus"]);
+```
+
+Alternatively, you can register the client manually with the name: `ScheduledRetryMiddleware.ServiceBusClient`.
+
+### Manual dead-letter resubmission
+When you want to resubmit a dead-lettered message manually, make sure the `ScheduledRetryMiddleware.DeliveryAttempts` property is removed.
+
 # Extensions
 ## FunctionContext extensions
 ### GetServiceBusTrigger
