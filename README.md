@@ -8,7 +8,7 @@ A collection of useful service bus features for .NET isolated middleware.
 # Installation
 Add the NuGet package to your project.
 
-# Service bus
+# Middleware
 ## Middleware template
 The abstract class `ServiceBusMiddlewareBase` supports the following methods:
 - `BeforeInvocationAsync`: executed before the invocation of the `FunctionExecutionDelegate`.
@@ -24,7 +24,6 @@ The `ExceptionInsightMiddleware` adds exception details to a dead-lettered messa
 Please note: it is currently not possible to read the maximum delivery count setting of a queue or topic. Therefore, you have to configure the `ExceptionInsightMiddlewareOptions` manually
 and ensure the maximum delivery count is set to a value equal or less than the service bus setting.
 
-
 ### Usage
 ```csharp
 var host = new HostBuilder()
@@ -34,4 +33,18 @@ var host = new HostBuilder()
             workerApplication.UseExceptionInsightMiddleware();
         })
     // ...
+```
+
+# Extensions
+## FunctionContext extensions
+### GetServiceBusTrigger
+Gets the `ServiceBusTriggerAttribute` from the function context:
+```csharp
+var attribute = functionContext.GetServiceBusTrigger();
+```
+
+### IsServiceBusTrigger
+Determines whether the function is a service bus trigger. Can be used when registering middleware:
+```csharp
+functionsWorkerApplicationBuilder.UseWhen<MySerivceBusMiddleware>(context => context.IsServiceBusTrigger());
 ```
