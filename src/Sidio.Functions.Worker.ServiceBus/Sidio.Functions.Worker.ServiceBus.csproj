@@ -15,6 +15,7 @@
         <PackageTags>azure functions servicebus middleware azure-functions azure-service-bus</PackageTags>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <Deterministic>true</Deterministic>
     </PropertyGroup>
 
     <ItemGroup>
