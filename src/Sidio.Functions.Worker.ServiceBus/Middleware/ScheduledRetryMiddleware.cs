@@ -1,6 +1,5 @@
 ﻿using Azure.Messaging.ServiceBus;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -63,18 +62,18 @@ public class ScheduledRetryMiddleware : ExceptionInsightMiddleware
             var message = CloneMessage(receivedMessage, deliveryAttempts);
             var enqueueTime = GetScheduledEnqueueTimeUtc(deliveryAttempts);
 
-            var clientFactory = context.InstanceServices.GetRequiredService<IAzureClientFactory<ServiceBusClient>>();
-            var client = clientFactory.CreateClient(ServiceBusClientName);
+            var client = CreateServiceBusClient(context, serviceBusTrigger);
             var sender = client.CreateSender(serviceBusTrigger.TopicName ?? serviceBusTrigger.QueueName);
-            await sender.ScheduleMessageAsync(message, enqueueTime, cancellationToken).ConfigureAwait(false);
+            var scheduleResult = await sender.ScheduleMessageAsync(message, enqueueTime, cancellationToken).ConfigureAwait(false);
 
             if (_logger.IsEnabled(LogLevel.Debug))
             {
                 _logger.LogDebug(
-                    "Message {MessageId} scheduled for delivery at {EnqueueTime} (attempt {Attempt})",
+                    "Message {MessageId} scheduled for delivery at {EnqueueTime} (attempt {Attempt}) with sequenceNumber {SequenceNumber}",
                     message.MessageId,
                     enqueueTime,
-                    deliveryAttempts + 1);
+                    deliveryAttempts + 1,
+                    scheduleResult);
             }
 
             return true;
@@ -125,6 +124,14 @@ public class ScheduledRetryMiddleware : ExceptionInsightMiddleware
         }
 
         return serviceBusReceivedMessage.MessageId;
+    }
+
+    private static ServiceBusClient CreateServiceBusClient(FunctionContext context, ServiceBusTriggerAttribute serviceBusTrigger)
+    {
+        var clientProvider = context.InstanceServices.GetService<IServiceBusClientProvider>() ??
+                             new DefaultServiceBusClientProvider(context);
+        return clientProvider.CreateClient(
+            serviceBusTrigger.Connection ?? throw new InvalidOperationException("Service Bus Connection cannot be null or empty"));
     }
 
     private DateTimeOffset GetScheduledEnqueueTimeUtc(int deliveryAttempts)

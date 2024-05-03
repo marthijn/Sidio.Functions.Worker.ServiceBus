@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 using Sidio.Functions.Worker.ServiceBus.Middleware.Abstractions;
 
@@ -21,23 +20,6 @@ public static class ServiceConfigurationExtensions
         where T : class, IServiceBusContextService
     {
         services.AddScoped<IServiceBusContextService, T>();
-        return services;
-    }
-
-    /// <summary>
-    /// Adds the service bus client for the <see cref="ScheduledRetryMiddleware"/>.
-    /// </summary>
-    /// <param name="services">The services.</param>
-    /// <param name="connectionString">The service bus connection string.</param>
-    /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    public static IServiceCollection AddServiceBusClientForScheduledRetryMiddleware(this IServiceCollection services, string connectionString)
-    {
-        services.AddAzureClients(
-            clientsBuilder =>
-            {
-                clientsBuilder.AddServiceBusClient(connectionString)
-                    .WithName(ScheduledRetryMiddleware.ServiceBusClientName);
-            });
         return services;
     }
 }

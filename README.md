@@ -53,13 +53,11 @@ var host = new HostBuilder()
 - BackoffMode: the backoff mode to use for rescheduling messages.
 - BackoffInSeconds: the number of seconds to wait before rescheduling a message.
 
-### ServiceBusClient
-An IAzureClientFactory of type ServiceBusClient must be registered to be able to reschedule messages. The extension method `AddServiceBusClientForScheduledRetryMiddleware` is available for this purpose.
-```charp
-services.AddServiceBusClientForScheduledRetryMiddleware(context.Configuration["ConnectionStrings:MyServiceBus"]);
+### Service Bus client provider
+It's possible to use a custom `IServiceBusClientProvider` to provide a `ServiceBusClient` for sending messages:
+```csharp
+services.AddScoped<IServiceBusClientProvider, MyServiceBusClientProvider>();
 ```
-
-Alternatively, you can register the client manually with the name: `ScheduledRetryMiddleware.ServiceBusClient`.
 
 ### Manual dead-letter resubmission
 When you want to resubmit a dead-lettered message manually, make sure the `ScheduledRetryMiddleware.DeliveryAttempts` property is removed.

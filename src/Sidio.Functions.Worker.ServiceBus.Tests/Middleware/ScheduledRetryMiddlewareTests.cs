@@ -1,6 +1,7 @@
 ﻿using Azure.Messaging.ServiceBus;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Azure;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -11,15 +12,18 @@ namespace Sidio.Functions.Worker.ServiceBus.Tests.Middleware;
 
 public sealed class ScheduledRetryMiddlewareTests
 {
+    private readonly Fixture _fixture = new ();
+
     [Fact]
     public async Task Invoke_ExceptionThrownAfterFirstDeliveryAttempt_ScheduleMessage()
     {
         // arrange
+        var connectionName = _fixture.Create<string>();
         var currentUtc = DateTimeOffset.UtcNow;
-        var serviceCollection = CreateServiceCollection(out var serviceBusContextService, out var serviceBusSender);
+        var serviceCollection = CreateServiceCollection(connectionName, out var serviceBusContextService, out var serviceBusSender);
         var middleware = CreateMiddleware();
         var context = new Mock<FunctionContext>();
-        var functionDefinition = CreateFunctionDefinition();
+        var functionDefinition = CreateFunctionDefinition(connectionName);
         context.SetupGet(x => x.InstanceServices).Returns(serviceCollection.BuildServiceProvider());
         context.SetupGet(x => x.FunctionDefinition).Returns(functionDefinition.Object);
 
@@ -50,7 +54,8 @@ public sealed class ScheduledRetryMiddlewareTests
     public async Task Invoke_MaxDeliveryAttempts_DeadLetterMessage()
     {
         // arrange
-        var serviceCollection = CreateServiceCollection(out var serviceBusContextService, out var serviceBusSender);
+        var connectionName = _fixture.Create<string>();
+        var serviceCollection = CreateServiceCollection(connectionName, out var serviceBusContextService, out var serviceBusSender);
         var middleware = CreateMiddleware();
         var context = new Mock<FunctionContext>();
         context.SetupGet(x => x.InstanceServices).Returns(serviceCollection.BuildServiceProvider());
@@ -93,7 +98,7 @@ public sealed class ScheduledRetryMiddlewareTests
         return new ScheduledRetryMiddleware(options, logger);
     }
 
-    private static ServiceCollection CreateServiceCollection(out Mock<IServiceBusContextService> serviceBusContextService, out ServiceBusSenderMock serviceBusSender)
+    private static ServiceCollection CreateServiceCollection(string connectionName, out Mock<IServiceBusContextService> serviceBusContextService, out ServiceBusSenderMock serviceBusSender)
     {
         serviceBusContextService = new Mock<IServiceBusContextService>();
         var serviceBusContextServiceObject = serviceBusContextService.Object;
@@ -104,18 +109,32 @@ public sealed class ScheduledRetryMiddlewareTests
         serviceBusClientMock.Setup(x => x.CreateSender(It.IsAny<string>()))
             .Returns(serviceBusSender);
 
-        var azureClientFactory = new Mock<IAzureClientFactory<ServiceBusClient>>();
-        azureClientFactory.Setup(x => x.CreateClient(It.IsAny<string>()))
+        var serviceBusClientProvider = new Mock<IServiceBusClientProvider>();
+        serviceBusClientProvider.Setup(x => x.CreateClient(connectionName))
             .Returns(serviceBusClientMock.Object);
-        var azureClientFactoryObject = azureClientFactory.Object;
+
+        var memorySource = new MemoryConfigurationSource
+        {
+            InitialData = new List<KeyValuePair<string, string>>
+            {
+                new ("ConnectionStrings:" + connectionName, "test")
+            }
+        };
+
+        var configuration = new ConfigurationRoot(
+            new List<IConfigurationProvider>
+            {
+                new MemoryConfigurationProvider(memorySource)
+            });
 
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddScoped<IServiceBusContextService>(_ => serviceBusContextServiceObject);
-        serviceCollection.AddScoped<IAzureClientFactory<ServiceBusClient>>(_ => azureClientFactoryObject);
+        serviceCollection.AddScoped<IServiceBusClientProvider>(_ => serviceBusClientProvider.Object);
+        serviceCollection.AddSingleton<IConfiguration>(configuration);
         return serviceCollection;
     }
 
-    private static Mock<FunctionDefinition> CreateFunctionDefinition()
+    private static Mock<FunctionDefinition> CreateFunctionDefinition(string connectionName)
     {
         var functionDefinition = new Mock<FunctionDefinition>();
         var functionParameter = new FunctionParameter(
@@ -127,11 +146,12 @@ public sealed class ScheduledRetryMiddlewareTests
                     "bindingAttribute",
                     new ServiceBusTriggerAttribute("test")
                     {
-                        Connection = "test-connection"
+                        Connection = connectionName
                     }
                 }
             });
-        functionDefinition.SetupGet(x => x.Parameters).Returns([
+        functionDefinition.SetupGet(x => x.Parameters).Returns(
+        [
             ..new List<FunctionParameter>
             {
                 functionParameter
