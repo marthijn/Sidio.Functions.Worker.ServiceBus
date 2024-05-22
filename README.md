@@ -75,3 +75,6 @@ Determines whether the function is a service bus trigger. Can be used when regis
 ```csharp
 functionsWorkerApplicationBuilder.UseWhen<MySerivceBusMiddleware>(context => context.IsServiceBusTrigger());
 ```
+
+# Known issues
+- The `ExceptionInsightMiddleware` and `ScheduledRetryMiddleware` only support a trigger with a `ServiceBusRecievedMessage` binding. A trigger-binding to a `string` is not supported.
