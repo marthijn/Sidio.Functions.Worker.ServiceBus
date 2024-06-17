@@ -24,7 +24,7 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.Azure.Functions.Worker.Core" Version="1.18.0" />
-      <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.ServiceBus" Version="5.19.0" />
+      <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.ServiceBus" Version="5.20.0" />
     </ItemGroup>
 
     <ItemGroup>
