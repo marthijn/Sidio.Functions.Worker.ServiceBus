@@ -13,5 +13,10 @@ public enum ScheduledRetryBackoffMode
     /// <summary>
     /// Linear backoff mode.
     /// </summary>
-    Linear
+    Linear,
+
+    /// <summary>
+    /// The constant backoff mode.
+    /// </summary>
+    Constant,
 }

@@ -143,6 +143,7 @@ public class ScheduledRetryMiddleware : ExceptionInsightMiddleware
             ScheduledRetryBackoffMode.Linear => DateTimeOffset.UtcNow.AddSeconds(_options.Value.BackoffInSeconds * attempts),
             ScheduledRetryBackoffMode.Exponential => DateTimeOffset.UtcNow.AddSeconds(
                 Math.Pow(_options.Value.BackoffInSeconds, attempts)),
+            ScheduledRetryBackoffMode.Constant => DateTimeOffset.UtcNow.AddSeconds(_options.Value.BackoffInSeconds),
             _ => throw new NotSupportedException($"BackoffMode {_options.Value.BackoffMode} is not supported")
         };
     }
