@@ -17,5 +17,10 @@ internal sealed class ServiceBusSenderMock : ServiceBusSender
         return Task.FromResult(1L);
     }
 
+    public override Task CloseAsync(CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
     public sealed record ScheduledMessage(ServiceBusMessage Message, DateTimeOffset ScheduledEnqueueTime);
 }

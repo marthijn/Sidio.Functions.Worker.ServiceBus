@@ -76,6 +76,7 @@ public class ScheduledRetryMiddleware : ExceptionInsightMiddleware
                     scheduleResult);
             }
 
+            await sender.CloseAsync(cancellationToken);
             return true;
         }
 
