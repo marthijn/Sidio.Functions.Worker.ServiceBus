@@ -4,6 +4,7 @@ A collection of useful service bus features for .NET isolated middleware.
 
 [![build](https://github.com/marthijn/Sidio.Functions.Worker.ServiceBus/actions/workflows/build.yml/badge.svg)](https://github.com/marthijn/Sidio.Functions.Worker.ServiceBus/actions/workflows/build.yml)
 [![NuGet Version](https://img.shields.io/nuget/v/Sidio.Functions.Worker.ServiceBus)](https://www.nuget.org/packages/Sidio.Functions.Worker.ServiceBus/)
+[![Coverage Status](https://coveralls.io/repos/github/marthijn/Sidio.Functions.Worker.ServiceBus/badge.svg?branch=main)](https://coveralls.io/github/marthijn/Sidio.Functions.Worker.ServiceBus?branch=main)
 
 # Installation
 Add the NuGet package to your project.

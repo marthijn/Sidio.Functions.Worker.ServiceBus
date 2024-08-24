@@ -1,8 +1,10 @@
-﻿using Azure.Messaging.ServiceBus;
+﻿using System.Diagnostics.CodeAnalysis;
+using Azure.Messaging.ServiceBus;
 using Microsoft.Azure.Functions.Worker;
 
 namespace Sidio.Functions.Worker.ServiceBus.Examples;
 
+[ExcludeFromCodeCoverage]
 public sealed class ExceptionHandlingFunction
 {
     [Function(nameof(ExceptionHandlingFunction))]
