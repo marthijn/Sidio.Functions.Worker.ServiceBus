@@ -19,8 +19,9 @@ public static class FunctionContextExtensions
     /// <returns>A <see cref="bool"/>.</returns>
     public static bool IsServiceBusTrigger(this FunctionContext context)
     {
-        return context.FunctionDefinition.InputBindings.Values
-            .First(a => a.Type.EndsWith(TriggerBindingSuffix)).Type == Constants.ServiceBusTrigger;
+        var binding = context.FunctionDefinition.InputBindings.Values
+            .FirstOrDefault(a => a.Type.EndsWith(TriggerBindingSuffix));
+        return binding is {Type: Constants.ServiceBusTrigger};
     }
 
     /// <summary>

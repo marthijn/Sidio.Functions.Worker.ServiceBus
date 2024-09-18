@@ -159,6 +159,5 @@ public sealed class ScheduledRetryMiddlewareTests
         ]);
 
         return functionDefinition;
-
     }
 }
