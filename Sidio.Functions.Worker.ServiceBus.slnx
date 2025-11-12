@@ -1,0 +1,22 @@
+<Solution>
+  <Folder Name="/Examples/">
+    <Project Path="src/Sidio.Functions.Worker.ServiceBus.Examples/Sidio.Functions.Worker.ServiceBus.Examples.csproj" />
+  </Folder>
+  <Folder Name="/SolutionFiles/">
+    <File Path=".gitignore" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/Src/">
+    <Project Path="src/Sidio.Functions.Worker.ServiceBus/Sidio.Functions.Worker.ServiceBus.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="src/Sidio.Functions.Worker.ServiceBus.Tests/Sidio.Functions.Worker.ServiceBus.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Workflows/">
+    <File Path=".github/dependabot.yml" />
+    <File Path=".github/workflows/build.yml" />
+    <File Path=".github/workflows/dependabot-autoapprove.yml" />
+    <File Path=".github/workflows/release.yml" />
+  </Folder>
+</Solution>
