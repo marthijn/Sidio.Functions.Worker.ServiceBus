@@ -27,7 +27,7 @@
     <ItemGroup>
       <PackageReference Include="Microsoft.Azure.Functions.Worker.Core" Version="2.52.0" />
       <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.ServiceBus" Version="5.24.0" />
-      <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.203">
+      <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.300">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
